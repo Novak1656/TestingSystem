@@ -1,0 +1,45 @@
+{% extends 'users_app/users_app_base.html' %}
+
+{% block title %} Регистрация {% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="text-center">
+        <h1 class="display-3 text-success">Testing System</h1>
+    </div>
+    <br>
+    <div class="container text-white rounded border border-success w-50">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <li class="text-danger" > {{ message }} </li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form method="post" id="register_form" class="mt-2">
+            <div class="container">
+                {% csrf_token %}
+                {{ form.as_p }}
+            </div>
+        </form>
+        <div class="container border-top border-success w-50 text-center ">
+            <div class="row mt-3 mb-2">
+                <input type="submit" class="btn btn-outline-success text-center btn-lg" form="register_form" value="Создать аккаунт">
+            </div>
+            <div class="row mt-2 mb-2">
+                {% comment %}
+                <a href="{% url 'login' %}" class="text-decoration-none text-secondary">Назад</a>
+                {% endcomment %}
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="container text-center w-25">
+        <p class="text-muted">@acclrtrrr</p>
+    </div>
+</div>
+{% endblock %}
