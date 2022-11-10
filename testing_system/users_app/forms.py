@@ -21,18 +21,13 @@ class RegistrationForm(UserCreationForm):
             'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
         }
 
-    # def clean_type_secret_word(self):
-    #     word = self.cleaned_data.get('secret_word')
-    #     word_type = self.cleaned_data.get('word_type')
-    #     if word and not word_type:
-    #         raise ValidationError('Выберите тип секретного слова')
-    #     return word_type
-    #
     def clean_secret_word(self):
-        word = self.cleaned_data.get('secret_word')
-        word_type = self.cleaned_data.get('word_type')
+        word = self.cleaned_data['secret_word']
+        word_type = self.cleaned_data['type_secret_word']
         if not word and word_type:
             raise ValidationError('Введите секретное слово')
+        elif word and not word_type:
+            raise ValidationError('Выберите тип секретного слова')
         return word
 
 

@@ -27,5 +27,3 @@ class User(AbstractUser):
         verbose_name='Модератор',
         default=False
     )
-
-# секретное слово
