@@ -1,7 +1,4 @@
 <!DOCTYPE html>
-{% load client_tags %}
-{% load stuff_tags %}
-
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -18,79 +15,105 @@
 
 <header>
     <nav class="navbar navbar-expand-xl navbar-dark bg-dark" aria-label="Sixth navbar example">
-        <div class="container-fluid container border-bottom border-info">
-            <a class="navbar-brand display-6" href="">
-                <span class="fs-3">Application accounting system</span>
+        <div class="container-fluid container border-bottom border-warning">
+            <a class="navbar-brand display-6" href="{% url 'main' %}">
+                <span class="fs-3">TestingSystem</span>
             </a>
             <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample06" aria-controls="navbarsExample06" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="navbar-collapse collapse" id="navbarsExample06" style="">
-                {% if user.role != 'executor' %}
-                <form role="search" method="get" class="w-100" action="{% url 'global_search' %}">
-                    <input class="form-control" type="search" name="search_word" placeholder="Search" aria-label="Search">
-                </form>
-                {% endif %}
                 <ul class="navbar-nav me-auto mb-2 mb-xl-0 justify-content-center mx-auto">
                     <li class="nav-item mx-1">
-                        <a class="nav-link text-white" aria-current="page" href="{% url 'app_list' %}">Заявки</a>
+                        <a class="nav-link active" aria-current="page" href="{% url 'main' %}">Home</a>
                     </li>
-                    {% if user.role != 'executor' %}
-                    <li class="nav-item mx-1">
-                        <a class="nav-link text-white" href="{% url 'stuff_list' %}">Исполнители</a>
-                    </li>
-                    <li class="nav-item mx-1">
-                        <a class="nav-link text-white" href="{% url 'clients_list' %}">Клиенты</a>
-                    </li>
-                    {% endif %}
-                    {% if user.is_staff %}
-                    <li class="nav-item mx-1">
-                        <a class="nav-link text-white" aria-current="page" href="{% url 'reports_list' %}">Отчёты</a>
-                    </li>
-                    <div class="dropdown">
-                        <a class="btn btn-dark dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                            Настройки
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuLink">
-                            <li><a class="dropdown-item" href="{% url 'notifications_settings' %}">Оповещения</a></li>
-                            <li><a class="dropdown-item" href="{% url 'e_types_list' %}">Типы оборудования <span class="badge bg-danger">{% get_e_types_count %}</span></a></li>
-                            <li><a class="dropdown-item" href="{% url 'e_attrs_list' %}">Атрибуты оборудования <span class="badge bg-danger">{% get_e_attrs_count %}</span></a></li>
-                        </ul>
-                    </div>
-                    {% endif %}
                 </ul>
-                {% get_user_notifications user_obj=user %}
-                <a class="nav nav-link me-3 py-2 text-white text-decoration-none" href="" data-bs-toggle="modal" data-bs-target="#exit">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-person-x-fill" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z"/>
-                    </svg>
-                </a>
 
-                <!-- Modal Exit -->
-                <div class="modal fade" id="exit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content bg-transparent border">
-                            <div class="modal-header">
-                                <h5 class="modal-title text-white" id="exampleModalLabel">Выход</h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p class="display-9 text-white">Вы действительно хотите выйти из аккаунта?</p>
-                            </div>
-                            <div class="modal-footer">
-                                <a type="button" class="btn btn-success" href="{% url 'stuff_user_logout' %}">Да</a>
-                                <button class="btn btn-danger" data-bs-dismiss="modal">Нет</button>
+
+                <div class="dropdown dropdown-center">
+                    <a class="btn btn-lg text-white text-decoration-none dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                        </svg>
+                        {% if user.is_authenticated %}
+                        {{ user.username }}
+                        {% else %}
+                        Guest
+                        {% endif %}
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-dark mx-0 border-0 shadow">
+                        {% if user.is_authenticated %}
+                        <li>
+                            <a class="dropdown-item d-flex gap-2 align-items-center" href="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                </svg>
+                                Профиль
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex gap-2 align-items-center" href="">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                                    <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
+                                    <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/>
+                                </svg>
+                                Настройки
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <button class="dropdown-item d-flex gap-2 align-items-center" data-bs-toggle="modal" data-bs-target="#exit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                                    <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2h.5a.5.5 0 0 1 .5.5V15h-1V2zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"/>
+                                </svg>
+                                Выход
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Modal Exit -->
+                    <div class="modal modal-alert " tabindex="-1" role="dialog" id="exit">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content rounded-4 shadow bg-warning text-dark">
+                                <div class="modal-body p-4 text-center">
+                                    <h5 class="mb-0">Вы действительно хотите выйти из аккаунта?</h5>
+                                </div>
+                                <div class="modal-footer flex-nowrap p-0 border-top border-dark">
+                                    <a type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0" href="{% url 'logout' %}">Yes</a>
+                                    <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0 border-left border-left-dark" data-bs-dismiss="modal">No</button>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <!-- Modal Exit -->
+                    {% else %}
+                    <li>
+                        <a class="dropdown-item d-flex gap-2 align-items-center" href="{% url 'login' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-check" viewBox="0 0 16 16">
+                                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                <path fill-rule="evenodd" d="M15.854 5.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L12.5 7.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Войти
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex gap-2 align-items-center" href="{% url 'registration' %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                            </svg>
+                            Создать аккаунт
+                        </a>
+                    </li>
+                    {% endif %}
                 </div>
-                <!-- Modal Exit -->
             </div>
         </div>
     </nav>
 </header>
-
 
 <main>
     <div class="bg-dark">
@@ -99,7 +122,7 @@
 </main>
 
 <footer class="text-muted py-5 bg-dark">
-    <div class="container border-top border-info">
+    <div class="container border-top border-warning">
         <p class="float-start mb-1 mt-3">©acclrtrrr</p>
     </div>
 </footer>

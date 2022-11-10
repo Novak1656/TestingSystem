@@ -34,4 +34,29 @@ class RegistrationForm(UserCreationForm):
 class LoginForm(AuthenticationForm):
     username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
-    remember_me = forms.BooleanField(label='Запомнить меня', widget=forms.CheckboxInput())
+    remember_me = forms.BooleanField(label='Запомнить меня', widget=forms.CheckboxInput(), required=False)
+
+
+class PasswordRecoveryForm(forms.Form):
+    username = forms.CharField(
+        label='Логин',
+        help_text='Введите ваш логин',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    type_secret_word = forms.CharField(
+        label='Категория секретного слова',
+        help_text='Выберите категорию к которой относится ваше секретное слово',
+        widget=forms.Select(choices=User.SECRET_WORD_TYPES, attrs={'class': 'form-control'})
+    )
+    secret_word = forms.CharField(
+        label='Секретное слово',
+        help_text='Введите ваше секретное слово',
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        user = User.objects.filter(username=username)
+        if not user.exists():
+            raise ValidationError(f'Пользователь "{username}" не существует')
+        return username

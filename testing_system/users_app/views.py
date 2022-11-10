@@ -1,11 +1,15 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.db.models import Q
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, FormView
 from django.views.generic import RedirectView
+from django.contrib.auth.forms import SetPasswordForm
 
 from .models import User
-from .forms import RegistrationForm, LoginForm
+from .forms import RegistrationForm, LoginForm, PasswordRecoveryForm
 
 
 class RegistrationView(CreateView):
@@ -55,3 +59,57 @@ def login_view(request):
     else:
         form = LoginForm()
     return render(request, 'users_app/login_page.html', {'form': form})
+
+
+class PasswordRecoveryView(FormView):
+    template_name = 'users_app/recovery/recovery_by_word.html'
+    form_class = PasswordRecoveryForm
+    success_url = reverse_lazy('pass_change')
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('main')
+        return super(PasswordRecoveryView, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            secret_word = form.cleaned_data['secret_word']
+            user = User.objects.filter(Q(username=username) & Q(secret_word=secret_word))
+            if not user.exists():
+                messages.error(request, 'У данного пользователя не установлено секретное слово')
+                return self.render_to_response(self.get_context_data(form=form))
+            request.session['username'] = username
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
+
+
+class RecoveryChangePasswordView(FormView):
+    template_name = 'users_app/recovery/recovery_page.html'
+    form_class = SetPasswordForm
+    success_url = reverse_lazy('login')
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'username' not in request.session.keys():
+            raise Http404
+        return super(RecoveryChangePasswordView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        self.request.session.clear()
+        form.save()
+        return super(RecoveryChangePasswordView, self).form_valid(form)
+
+    def get_form_kwargs(self):
+        kwargs = {
+            'user': User.objects.get(username=self.request.session['username']),
+            'initial': self.get_initial(),
+            'prefix': self.get_prefix(),
+        }
+        if self.request.method in ('POST', 'PUT'):
+            kwargs.update({
+                'data': self.request.POST,
+                'files': self.request.FILES,
+            })
+        return kwargs
