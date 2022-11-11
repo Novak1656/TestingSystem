@@ -1,6 +1,7 @@
 from django.test import TestCase
-from ..forms import RegistrationForm, LoginForm
+from ..forms import RegistrationForm, LoginForm, PasswordRecoveryForm
 from ..models import User
+from django.forms import TextInput, Select
 
 
 class RegistrationFormTestCase(TestCase):
@@ -60,3 +61,37 @@ class LoginFormTestCase(TestCase):
     def test_remember_me_field(self):
         field = self.form.fields['remember_me']
         self.assertEqual(field.label, 'Запомнить меня')
+
+
+class PasswordRecoveryFormTestCase(TestCase):
+    def setUp(self) -> None:
+        self.fields = PasswordRecoveryForm().fields
+
+    def test_username_field(self):
+        field = self.fields['username']
+        self.assertEqual(field.label, 'Логин')
+        self.assertEqual(field.help_text, 'Введите ваш логин')
+        self.assertEqual(field.widget.__class__.__name__, TextInput.__name__)
+        self.assertEqual(field.widget.attrs['class'], 'form-control')
+
+    def test_type_secret_word_field(self):
+        field = self.fields['type_secret_word']
+        self.assertEqual(field.label, 'Категория секретного слова')
+        self.assertEqual(field.help_text, 'Выберите категорию к которой относится ваше секретное слово')
+        self.assertEqual(field.widget.__class__.__name__, Select.__name__)
+        self.assertEqual(field.widget.attrs['class'], 'form-control')
+        choices_list = User.SECRET_WORD_TYPES
+        self.assertEqual(field.widget.choices, choices_list)
+
+    def test_secret_word_field(self):
+        field = self.fields['secret_word']
+        self.assertEqual(field.label, 'Секретное слово')
+        self.assertEqual(field.help_text, 'Введите ваше секретное слово')
+        self.assertEqual(field.widget.__class__.__name__, TextInput.__name__)
+        self.assertEqual(field.widget.attrs['class'], 'form-control')
+
+    def test_clean_username(self):
+        data = dict(username='NotExistingUser', type_secret_word='Hobby', secret_word='SomeSecretWord')
+        form = PasswordRecoveryForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['username'][0], 'Пользователь "NotExistingUser" не существует')
