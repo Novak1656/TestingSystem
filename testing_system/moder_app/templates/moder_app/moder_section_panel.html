@@ -6,12 +6,12 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-white border-white border-bottom-0 {% if cur_section == 'category' %}bg-success{% endif %}" aria-current="page" href="">
+            <a class="nav-link text-white border-white border-bottom-0 {% if cur_section == 'category' %}bg-success{% endif %}" aria-current="page" href="{% url 'moder_categories' %}">
                 Категории тестов
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-white border-white border-bottom-0 {% if cur_section == 'tag' %}bg-success{% endif %}" aria-current="page" href="">
+            <a class="nav-link text-white border-white border-bottom-0 {% if cur_section == 'tag' %}bg-success{% endif %}" aria-current="page" href="{% url 'moder_tags' %}">
                 Теги тестов
             </a>
         </li>
