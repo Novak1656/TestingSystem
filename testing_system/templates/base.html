@@ -28,6 +28,16 @@
                     <li class="nav-item mx-1">
                         <a class="nav-link active" aria-current="page" href="{% url 'main' %}">Home</a>
                     </li>
+                    {% if user.is_staff %}
+                    <li class="nav-item mx-1">
+                        <a class="nav-link active" aria-current="page" href="admin/">AdminPanel</a>
+                    </li>
+                    {% endif %}
+                    {% if user.is_moder %}
+                    <li class="nav-item mx-1">
+                        <a class="nav-link active" aria-current="page" href="{% url 'moder_panel' %}">ModerPanel</a>
+                    </li>
+                    {% endif %}
                 </ul>
 
 

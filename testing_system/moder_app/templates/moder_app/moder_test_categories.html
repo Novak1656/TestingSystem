@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load moder_tags %}
+
+{% block title %} Модерация категорий тестов {% endblock %}
+
+{% block content %}
+<div class="container text-white border-info">
+    <div class="">
+        {% get_section_panel cur_section %}
+        <br>
+        <div class="container text-center w-75">
+            <div class="border-bottom mb-3">
+                <h1 class="display-6">
+                    Модерация категорий тестов
+                    |
+                    <a href="" class="btn btn-outline-success btn-lg text-end" data-bs-toggle="modal" data-bs-target="#create_category">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+                        </svg>
+                    </a>
+                    <!-- Modal Test Category Create -->
+                    <div class="modal fade" id="create_category" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content bg-info text-dark">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Создание новой категории тестов</h5>
+                                    <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" id="create_category_form">
+                                        {% csrf_token %}
+                                        {{ form.as_p }}
+                                    </form>
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <input form="create_category_form" type="submit" class="btn btn-outline-success text-center btn-lg" value="Создать">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Test Category Create -->
+                </h1>
+            </div>
+            <br>
+            <div>
+                {% if categories %}
+                <table class="table-dark table-bordered border-info w-100">
+                    <thead>
+                    <tr class="text-center">
+                        <th scope="col">#</th>
+                        <th scope="col">Название категории</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for category in categories %}
+                    <tr>
+                        <th scope="row"><h3 class="fs-5 text-center">{{ forloop.counter }}.</h3></th>
+                        <td><h3 class="fs-5 ms-3">{{ category.title }}</h3></td>
+                        <td class="text-center"><h3 class="fs-5 ms-3">{{ category.created_at }}</h3></td>
+                        <td class="text-center">
+                            <button class="btn btn-outline-danger w-100 text-center border-bottom-0 border-top-0 border-start-0 border-end-0" data-bs-toggle="modal" data-bs-target="#delete_category{{ category.slug }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                                </svg>
+                            </button>
+                        </td>
+                        <!-- Category Delete -->
+                        <div class="modal modal-alert" tabindex="-1" role="dialog" id="delete_category{{ category.slug }}">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content rounded-4 shadow bg-info text-dark">
+                                    <div class="modal-body p-4 text-center">
+                                        <h5 class="mb-0">Вы действительно хотите удалить категорию: "{{ category.title }}"?</h5>
+                                    </div>
+                                    <div class="modal-footer flex-nowrap p-0 border-top border-dark text-dark">
+                                        <a type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0" href="{% url 'category_delete' %}?slug_category={{ category.slug }}">Yes</a>
+                                        <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0 border-left border-left-dark" data-bs-dismiss="modal">No</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Category Delete -->
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="text-center">
+                    <h1 class="display-6 mb-3">
+                        Список категорий тестов пуст.
+                    </h1>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
