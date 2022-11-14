@@ -86,6 +86,11 @@ class TestAnswers(models.Model):
         verbose_name = 'Ответ теста'
         verbose_name_plural = 'Ответы тестов'
 
+    def save(self, *args, **kwargs):
+        if self.question.answers_type == 'Expanded':
+            self.is_right = True
+        return super(TestAnswers, self).save(*args, **kwargs)
+
     def __str__(self):
         return f'Answer #{self.pk}'
 
