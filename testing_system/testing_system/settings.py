@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from decouple import config
-
+from django.urls import reverse, reverse_lazy
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -116,3 +116,4 @@ EMAIL_USE_TLS = False
 EMAIL_USE_SSL = True
 
 AUTH_USER_MODEL = 'users_app.User'
+LOGIN_URL = reverse_lazy('login')

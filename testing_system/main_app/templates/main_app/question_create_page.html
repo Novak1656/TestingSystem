@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %} Создание теста | Этап 2 {% endblock %}
+
+{% block content %}
+<div class="container text-white">
+    <div class="border-bottom border-info">
+        <h1 class="display-6 text-center">Создание теста | Этап 2</h1>
+    </div>
+    <div class="container w-75 mt-3">
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <div class="row">
+                {% for form in formset %}
+                <div class="col-6">
+                    <h3>Вопрос {{ forloop.counter }}</h3>
+                    {{ form }}
+                    <br>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="container border-top text-center border-info">
+                <input type="submit" class="btn btn-outline-success btn-lg mt-4" value="Перейти к созданию ответов на вопросы">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

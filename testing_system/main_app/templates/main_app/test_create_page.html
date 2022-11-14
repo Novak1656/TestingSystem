@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Создание теста | Этап 1 {% endblock %}
+
+{% block content %}
+<div class="container text-white">
+    <div class="border-bottom border-info">
+        <h1 class="display-6 text-center">Создание теста | Этап 1</h1>
+    </div>
+    <div class="container w-50 mt-3">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <label for="quest_count">Кол-во вопросов:</label>
+            <input type="number" min="1" max="10" id='quest_count' name="quest_count" class="form-control">
+            <div class="container border-top text-center border-info">
+                <input type="submit" class="btn btn-outline-success btn-lg mt-4" value="Перейти к созданию вопросов">
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

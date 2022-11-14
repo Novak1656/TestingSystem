@@ -1,5 +1,6 @@
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db import models
+from django.utils.timezone import now
 from django_unique_slugify import slugify, unique_slugify
 from unidecode import unidecode
 
@@ -180,6 +181,8 @@ class Test(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             unique_slugify(self, slugify(unidecode(self.title)))
+        if self.is_published:
+            self.published_at = now()
         super(Test, self).save(*args, **kwargs)
 
     def __str__(self):
