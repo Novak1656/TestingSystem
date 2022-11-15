@@ -1,9 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import AccessMixin
+from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, ListView, DetailView
 
 from main_app.models import Category, Tag, Test
 
@@ -75,3 +76,39 @@ def test_tag_delete(request):
     tag_slug = request.GET.get('slug_tag')
     Tag.objects.get(slug=tag_slug).delete()
     return redirect('moder_tags')
+
+
+class ModerTestListView(AccessMixin, ListView):
+    model = Test
+    template_name = 'moder_app/moder_tests.html'
+    context_object_name = 'tests'
+    extra_context = {'cur_section': 'test'}
+    login_url = reverse_lazy('login')
+
+    def dispatch(self, request, *args, **kwargs):
+        check_is_moder(request.user)
+        return super(ModerTestListView, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return Test.objects.filter(Q(is_published=False) & Q(is_created=True))\
+            .select_related('category', 'author').prefetch_related('tags')
+
+
+class ModerTestDetailView(AccessMixin, DetailView):
+    model = Test
+    template_name = 'moder_app/moder_test_detail.html'
+    context_object_name = 'test'
+    login_url = reverse_lazy('login')
+
+    def dispatch(self, request, *args, **kwargs):
+        check_is_moder(request.user)
+        return super(ModerTestDetailView, self).dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return Test.objects.all().select_related('category', 'author')\
+            .prefetch_related('tags', 'questions', 'questions__answers')
+
+    def get_context_data(self, **kwargs):
+        context = super(ModerTestDetailView, self).get_context_data(**kwargs)
+        context['tags'] = ', '.join(tag.title for tag in self.object.tags.all())
+        return context

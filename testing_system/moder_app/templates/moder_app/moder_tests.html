@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load moder_tags %}
+
+{% block title %} Модерация тестов {% endblock %}
+
+{% block content %}
+<div class="container text-white border-info">
+    <div class="">
+        {% get_section_panel cur_section %}
+        <br>
+        <div class="container text-center">
+            <div class="border-bottom mb-3">
+                <h1 class="display-6">
+                    Модерация тестов | <span class="badge bg-success">Всего тестов: {{ tests|length }}</span>
+                </h1>
+            </div>
+            <br>
+            <div>
+                {% if tests %}
+                <table class="table-dark table-bordered border-info w-100">
+                    <thead>
+                    <tr class="text-center">
+                        <th scope="col">#</th>
+                        <th scope="col">Название теста</th>
+                        <th scope="col">Автор</th>
+                        <th scope="col">Категория</th>
+                        <th scope="col">Теги</th>
+                        <th scope="col">Дата создания</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for test in tests %}
+                    <tr>
+                        <th scope="row"><h3 class="fs-5 text-center">{{ forloop.counter }}.</h3></th>
+                        <td><h3 class="fs-5 ms-3">{{ test.title }}</h3></td>
+                        <td class="text-center"><h3 class="fs-5 ms-3">{{ test.author.username }}</h3></td>
+                        <td class="text-center"><h3 class="fs-5 ms-3">{{ test.category.title }}</h3></td>
+                        <td class="text-center"><h3 class="fs-5 ms-3">{{ test.tags.all|tags_list }}</h3></td>
+                        <td class="text-center"><h3 class="fs-5 ms-3">{{ test.created_at }}</h3></td>
+                        <td class="text-center">
+                            <a href="{% url 'moder_test_detail' test.slug %}" class="btn btn-outline-info w-100 text-center border-bottom-0 border-top-0 border-start-0 border-end-0">
+                                Подробнее
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="text-center">
+                    <h1 class="display-6 mb-3">
+                        Список тестов для модерации пуст.
+                    </h1>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

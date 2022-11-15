@@ -8,6 +8,8 @@ from .models import Test, TestQuestions, TestAnswers
 from .forms import TestForm, TestQuestionsForm, TestAnswersForm
 from .utils import CustomModalFormSetMixin
 
+# Добавить возможность для пользователей закончить создание теста если такие имеются
+
 
 def index(request):
     return render(request, 'base.html')
@@ -149,3 +151,5 @@ class AnswersCreateView(AccessMixin, FormView, CustomModalFormSetMixin):
 
     def form_invalid(self, formset_list):
         return self.render_to_response(self.get_context_data(formset_list=formset_list))
+
+
