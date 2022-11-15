@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path
 from .views import (
     ModerPanelView, ModerTestCategoriesView, test_category_delete,
-    ModerTestTagsView, test_tag_delete, ModerTestListView, ModerTestDetailView
+    ModerTestTagsView, test_tag_delete, ModerTestListView, ModerTestDetailView, ModerTestAcceptedRedirectView, ModerTestRejectedRedirectView
 )
 
 urlpatterns = [
@@ -16,5 +16,7 @@ urlpatterns = [
 
     path('tests/', login_required(ModerTestListView.as_view()), name='moder_tests'),
     path('tests/<str:slug>/', login_required(ModerTestDetailView.as_view()), name='moder_test_detail'),
+    path('tests/<str:test_slug>/accepted/', login_required(ModerTestAcceptedRedirectView.as_view()), name='test_accepted'),
+    path('tests/<str:test_slug>/rejected/', login_required(ModerTestRejectedRedirectView.as_view()), name='test_rejected'),
 
 ]

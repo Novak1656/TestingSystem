@@ -2,13 +2,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import AccessMixin
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, CreateView, ListView, DetailView
+from django.views.generic import TemplateView, CreateView, ListView, DetailView, RedirectView
 
 from main_app.models import Category, Tag, Test
 
 from .forms import CategoryForm, TagForm
+from .utils import EmailSenderMixin
 
 
 def check_is_moder(user) -> None:
@@ -112,3 +113,63 @@ class ModerTestDetailView(AccessMixin, DetailView):
         context = super(ModerTestDetailView, self).get_context_data(**kwargs)
         context['tags'] = ', '.join(tag.title for tag in self.object.tags.all())
         return context
+
+
+class ModerTestAcceptedRedirectView(AccessMixin, EmailSenderMixin, RedirectView):
+    url = reverse_lazy('moder_tests')
+    message_template_name = 'test_accepted_mail.html'
+    subject = 'Ваш тест успешно прошёл модерацию'
+    login_url = reverse_lazy('login')
+
+    def dispatch(self, request, *args, **kwargs):
+        check_is_moder(request.user)
+        return super(ModerTestAcceptedRedirectView, self).dispatch(request, *args, **kwargs)
+
+    def get_recipient_list(self):
+        recipient = self.get_queryset().values_list('author__email', flat=True).first()
+        return [recipient]
+
+    def get_queryset(self):
+        return Test.objects.filter(slug=self.kwargs['test_slug']).select_related('author')
+
+    def get_email_context(self):
+        test_obj = self.get_queryset().first()
+        mail_context = dict(username=test_obj.author.username, test_name=test_obj.title)
+        return mail_context
+
+    def get(self, request, *args, **kwargs):
+        if self.send_email():
+            test_obj = self.get_queryset().first()
+            test_obj.is_published = True
+            test_obj.save()
+        return super(ModerTestAcceptedRedirectView, self).get(request, *args, **kwargs)
+
+
+class ModerTestRejectedRedirectView(AccessMixin, EmailSenderMixin, RedirectView):
+    url = reverse_lazy('moder_tests')
+    message_template_name = 'test_rejected_mail.html'
+    subject = 'Ваш тест был отклонён модерацией'
+    login_url = reverse_lazy('login')
+
+    def dispatch(self, request, *args, **kwargs):
+        check_is_moder(request.user)
+        return super(ModerTestRejectedRedirectView, self).dispatch(request, *args, **kwargs)
+
+    def get_recipient_list(self):
+        recipient = self.get_queryset().values_list('author__email', flat=True).first()
+        return [recipient]
+
+    def get_queryset(self):
+        return Test.objects.filter(slug=self.kwargs['test_slug']).select_related('author')
+
+    def get_email_context(self):
+        test_obj = self.get_queryset().first()
+        comment = self.request.POST.get('comment')
+        mail_context = dict(username=test_obj.author.username, test_name=test_obj.title, moderator_comment=comment)
+        return mail_context
+
+    def get(self, request, *args, **kwargs):
+        if self.send_email():
+            test_obj = self.get_queryset().first()
+            test_obj.delete()
+        return super(ModerTestRejectedRedirectView, self).get(request, *args, **kwargs)

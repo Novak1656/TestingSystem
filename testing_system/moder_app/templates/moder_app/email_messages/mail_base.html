@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {% endblock %}</title>
+</head>
+<body>
+<div>
+    <h1>Уважаемый {{ username }}</h1>
+    {% block content %}{% endblock %}
+    <p>С уважением TestingSystem.</p>
+</div>
+</body>
+</html>

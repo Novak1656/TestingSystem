@@ -1,0 +1,7 @@
+{% extends 'moder_app/email_messages/mail_base.html' %}
+
+{% block title %} Ваш тест успешно прошёл модерацию {% endblock %}
+
+{% block content %}
+<p>Предложенный вами тест <strong>"{{ test_name }}"</strong> успешно прошёл модерацию и был опубликован на нашем сервисе. Ваш тест доступен по ссылке "link".</p>
+{% endblock %}
