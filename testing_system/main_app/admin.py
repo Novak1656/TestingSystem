@@ -31,7 +31,8 @@ class TestQuestionsAdmin(admin.ModelAdmin):
 
 @admin.register(Test)
 class TestAdmin(admin.ModelAdmin):
-    list_display = ['slug', 'title', 'author', 'category', 'passed_times', 'is_published', 'published_at', 'created_at']
+    list_display = ['slug', 'title', 'author', 'category', 'passed_times',
+                    'is_published', 'published_at', 'created_at', 'is_created']
     list_display_links = ['slug']
     list_filter = ['author', 'category', 'is_published']
     search_fields = ['title']

@@ -177,6 +177,10 @@ class Test(models.Model):
         blank=True,
         null=True
     )
+    is_created = models.BooleanField(
+        verbose_name='Создан',
+        default=False
+    )
 
     class Meta:
         verbose_name = 'Тест'

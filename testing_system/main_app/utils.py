@@ -27,7 +27,6 @@ class CustomModalFormSetMixin:
     def get_formset(self):
         if not self.multiple_formsets:
             return modelformset_factory(self.model, form=self.form_class, extra=self.get_form_count())
-
         formsets = dict()
         formset_settings = self.get_multiple_formset_settings()
         queryset_dict = {obj.pk: obj for obj in TestQuestions.objects.filter(pk__in=formset_settings.keys())}

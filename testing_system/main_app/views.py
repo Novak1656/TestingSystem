@@ -23,6 +23,8 @@ class TestCreateView(AccessMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         if 'test_slug' in request.session.keys():
             return redirect('quest_create')
+        elif 'quest_pk' in request.session.keys():
+            return redirect('answer_create')
         return super(TestCreateView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -48,6 +50,8 @@ class QuestionsCreateView(AccessMixin, FormView, CustomModalFormSetMixin):
     def dispatch(self, request, *args, **kwargs):
         if 'test_slug' not in request.session.keys():
             return redirect('test_create')
+        elif 'quest_pk' in request.session.keys():
+            return redirect('answer_create')
         return super(QuestionsCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_form_count(self):
@@ -56,20 +60,19 @@ class QuestionsCreateView(AccessMixin, FormView, CustomModalFormSetMixin):
     def get_context_data(self, **kwargs):
         context = super(QuestionsCreateView, self).get_context_data(**kwargs)
         if 'formset' not in context.keys():
-            ModalFormSet = self.get_formset()
-            context['formset'] = ModalFormSet(queryset=TestQuestions.objects.none())
+            modal_formset = self.get_formset()
+            context['formset'] = modal_formset(queryset=TestQuestions.objects.none())
         return context
 
     def post(self, request, *args, **kwargs):
-        ModalFormSet = self.get_formset()
-        formset = ModalFormSet(request.POST, request.FILES)
+        modal_formset = self.get_formset()
+        formset = modal_formset(request.POST, request.FILES)
         if formset.is_valid():
             for form in formset:
                 if form.cleaned_data == {}:
                     messages.error(request, 'Fill in all the fields for questions')
                     return self.render_to_response(self.get_context_data(formset=formset))
-                # Сделать валидатор для формсета
-            #return self.form_valid(formset)
+            return self.form_valid(formset)
         else:
             return self.form_invalid(formset)
 
@@ -120,7 +123,9 @@ class AnswersCreateView(AccessMixin, FormView, CustomModalFormSetMixin):
         formset_data = {quest: formset(request.POST, prefix=quest.pk) for quest, formset in self.get_formset().items()}
         for question, formset in formset_data.items():
             if formset.is_valid():
-                right_answers = [form.cleaned_data['is_right'] for form in formset if 'is_right' in form.cleaned_data.keys()]
+                right_answers = [
+                    form.cleaned_data['is_right'] for form in formset if 'is_right' in form.cleaned_data.keys()
+                ]
                 if right_answers.count(True) == 0:
                     messages.error(request, 'Select one or more right answers')
                     return self.render_to_response(self.get_context_data(formset_list=formset_data))
@@ -129,14 +134,18 @@ class AnswersCreateView(AccessMixin, FormView, CustomModalFormSetMixin):
                 return self.form_invalid(formset_list=formset_data)
 
     def form_valid(self, formset_list):
+        test_obj = None
         for question, formset in formset_list.items():
+            if not test_obj:
+                test_obj = question.test
             instances = formset.save(commit=False)
             for instance in instances:
                 instance.question = question
                 instance.save()
+        test_obj.is_created = True
+        test_obj.save()
         del self.request.session['quest_pk']
         return HttpResponseRedirect(reverse('main'))
 
     def form_invalid(self, formset_list):
         return self.render_to_response(self.get_context_data(formset_list=formset_list))
-
