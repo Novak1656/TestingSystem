@@ -1,18 +1,15 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import AccessMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, FormView
-from .models import Test, TestQuestions, TestAnswers
+from django.views.generic import CreateView, FormView, ListView, DetailView, TemplateView
+from .models import Test, TestQuestions, TestAnswers, TestResults
 from .forms import TestForm, TestQuestionsForm, TestAnswersForm
 from .utils import CustomModalFormSetMixin
 
 # Добавить возможность для пользователей закончить создание теста если такие имеются
-
-
-def index(request):
-    return render(request, 'base.html')
 
 
 class TestCreateView(AccessMixin, CreateView):
@@ -153,3 +150,63 @@ class AnswersCreateView(AccessMixin, FormView, CustomModalFormSetMixin):
         return self.render_to_response(self.get_context_data(formset_list=formset_list))
 
 
+class TestsListView(ListView):
+    model = Test
+    template_name = 'main_app/test_list.html'
+    context_object_name = 'tests'
+
+    def get_queryset(self):
+        return Test.objects.filter(is_published=True).select_related('author', 'category').prefetch_related('tags', 'questions')
+
+
+class TestDetailView(AccessMixin, DetailView):
+    model = Test
+    template_name = 'main_app/test_page.html'
+    context_object_name = 'test'
+    login_url = reverse_lazy('login')
+
+    def get_queryset(self):
+        return Test.objects.select_related('author', 'category').prefetch_related('tags', 'questions')
+
+
+# class TestingBeginningView(AccessMixin, CreateView):
+#     model = TestResults
+#     template_name = 'main_app/start_test_page.html'
+#     login_url = reverse_lazy('login')
+#
+#     def post(self, request, *args, **kwargs):
+#         print(request.POST)
+#
+#     def get_context_data(self, **kwargs):
+#         context = super(TestingBeginningView, self).get_context_data(**kwargs)
+#         test_pk = self.kwargs['test_pk']
+#         context['test_title'] = Test.objects.filter(pk=test_pk).values_list('title', flat=True).first()
+#         context['questions'] = TestQuestions.objects.filter(test__pk=test_pk).prefetch_related('answers')
+#         return context
+
+@login_required
+def testing_beginning_view(request, test_pk):
+    test = Test.objects.get(pk=test_pk)
+    questions = TestQuestions.objects.filter(test__pk=test_pk).prefetch_related('answers')
+    if request.method == 'POST':
+        questions_resp = dict()
+        for quest_resp in request.POST.items():
+            if 'csrfmiddlewaretoken' not in quest_resp:
+                answer_id, answer = quest_resp
+                questions_resp.update({int(answer_id): answer})
+        print(questions_resp)
+        rights = []
+        for quest in questions:
+            right_quest = True
+            for right_answer_pk in quest.answers.filter(is_right=True).values_list('id', flat=True):
+                if right_answer_pk not in questions_resp.keys():
+                    # Если хоть один ответ не верный то break
+                    # Проверку ответтов внести в отедльную функцию
+                    right_quest = False
+                    break
+            if right_quest:
+                rights.append(quest)
+        print(rights)
+    return render(request, 'main_app/start_test_page.html', {'test_title': test.title, 'questions': questions})
+# Удалить возможность создавать развёрнуттые ответы
+#class TestingBeginningView

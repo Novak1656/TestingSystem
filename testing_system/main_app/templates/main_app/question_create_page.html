@@ -17,7 +17,7 @@
             {% endfor %}
         </ul>
         {% endif %}
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ formset.management_form }}
             <div class="row">

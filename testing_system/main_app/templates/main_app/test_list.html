@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %} Тесты {% endblock %}
+
+{% block content %}
+<div class="container text-white border-info">
+    <div class="border-bottom border-info">
+        <h1 class="display-6 mb-3">Тесты | <span class="badge bg-danger">Всего: {{ tests|length }}</span></h1>
+    </div>
+    <br>
+    <div class="container">
+        <div class="row">
+            {% for test in tests %}
+            <div class="col-3 mb-2">
+                <div class="card h-100 bg-dark border border-info rounded">
+                    <div class="card-title text-center">
+                        <h2>{{ test.title }}</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul>
+                            <li>Автор: {{ test.author.username }}</li>
+                            <li>Категория: {{ test.category.title }}</li>
+                            <li>Теги: {{ test.tags.all|join:", " }}</li>
+                            <li>Вопросов: {{ test.questions.all.count }}</li>
+                            <li>Раз пройдено: {{ test.passed_times }}</li>
+                            <li>Опубликовано: {{ test.published_at }}</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex align-items-center">
+                            <a href="{{ test.get_absolute_url }}" class="btn btn-info w-100">Перейти к тесту</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center">
+                <h1 class="display-6 mb-3">
+                    Список тестов пуст.
+                </h1>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

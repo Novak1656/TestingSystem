@@ -1,5 +1,6 @@
 from django.core.validators import MaxLengthValidator, MinLengthValidator
 from django.db import models
+from django.urls import reverse
 from django.utils.timezone import now
 from django_unique_slugify import slugify, unique_slugify
 from unidecode import unidecode
@@ -193,6 +194,9 @@ class Test(models.Model):
         if self.is_published:
             self.published_at = now()
         super(Test, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('test_detail', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.title
