@@ -22,9 +22,8 @@ class TestAnswersAdmin(admin.ModelAdmin):
 
 @admin.register(TestQuestions)
 class TestQuestionsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'test', 'question', 'image', 'answers_type']
+    list_display = ['id', 'test', 'question', 'image']
     list_display_links = ['id', 'test']
-    list_filter = ['answers_type']
     search_fields = ['question']
     save_as = True
 

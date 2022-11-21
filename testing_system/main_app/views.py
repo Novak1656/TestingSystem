@@ -81,12 +81,11 @@ class QuestionsCreateView(AccessMixin, FormView, CustomModalFormSetMixin):
         test_obj = Test.objects.get(slug=test_slug)
         del self.request.session['test_slug']
         del self.request.session['quest_count']
-        answers_count = {'Expanded': 1, 'Variable': 4}
-        quest_pk = dict()
+        quest_pk = list()
         for instance in instances:
             instance.test = test_obj
             instance.save()
-            quest_pk[instance.pk] = answers_count.get(instance.answers_type)
+            quest_pk.append(instance.pk)
         self.request.session['quest_pk'] = quest_pk
         return HttpResponseRedirect(reverse('answer_create'))
 

@@ -87,18 +87,11 @@ class TestAnswers(models.Model):
         verbose_name = 'Ответ теста'
         verbose_name_plural = 'Ответы тестов'
 
-    def save(self, *args, **kwargs):
-        if self.question.answers_type == 'Expanded':
-            self.is_right = True
-        return super(TestAnswers, self).save(*args, **kwargs)
-
     def __str__(self):
         return f'Answer #{self.pk}'
 
 
 class TestQuestions(models.Model):
-    ANSWERS_TYPES = [('Expanded', 'Развёрнутый ответ'), ('Variable', 'С вариантами ответа')]
-
     test = models.ForeignKey(
         verbose_name='Тест',
         to='Test',
@@ -114,12 +107,6 @@ class TestQuestions(models.Model):
         upload_to=question_image_path,
         blank=True,
         null=True
-    )
-    answers_type = models.CharField(
-        verbose_name='Тип ответа',
-        max_length=255,
-        choices=ANSWERS_TYPES,
-        default='Variable'
     )
 
     class Meta:

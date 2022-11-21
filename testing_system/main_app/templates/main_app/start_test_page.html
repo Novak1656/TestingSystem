@@ -27,15 +27,9 @@
                 {% if quest.image %} <img src="{{ quest.image.url }}" alt="" class="mt-2" style="width:200px"> {% endif %}
                 <h3>Вопрос {{ forloop.counter }}. {{ quest.question }}</h3>
                 {% for answer in quest.answers.all %}
-                {% if quest.answers_type == 'Variable' %}
                 <div class="col-6 text-center mb-3 text-info">
                     <h3 class="fs-4">{{ forloop.counter0|digit_to_alpha }}) {{ answer.answer }} <input type="checkbox" name="{{answer.pk}}"></h3>
                 </div>
-                {% else %}
-                <div class="w-75 text-center container mb-3">
-                    <input type="text" name="{{answer.pk}}" class="form-control" placeholder="Введите развёрнутый ответ...">
-                </div>
-                {% endif %}
                 {% endfor %}
             </div>
             <br>

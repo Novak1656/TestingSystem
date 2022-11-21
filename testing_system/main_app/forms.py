@@ -22,11 +22,10 @@ class TestForm(forms.ModelForm):
 class TestQuestionsForm(forms.ModelForm):
     class Meta:
         model = TestQuestions
-        fields = ['question', 'image', 'answers_type']
+        fields = ['question', 'image']
         widgets = {
             'question': forms.Textarea(attrs={'class': 'form-control', 'style': 'height: 50px;'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
-            'answers_type': forms.Select(attrs={'class': 'form-control'})
         }
 
 
