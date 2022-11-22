@@ -134,3 +134,40 @@ class UserResultsListView(AccessMixin, ListView):
     def get_queryset(self):
         user = self.request.user
         return user.results.all().prefetch_related('right_answers', 'test__questions').select_related('test')
+
+
+class UserTestsListView(AccessMixin, ListView):
+    template_name = 'users_app/user_profile/user_tests.html'
+    context_object_name = 'tests'
+    login_url = reverse_lazy('login')
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.tests.all().prefetch_related('questions', 'questions__answers', 'tags').select_related('category')
+
+
+class UserTestDelete(AccessMixin, RedirectView):
+    url = reverse_lazy('my_tests')
+    login_url = reverse_lazy('login')
+
+    def get(self, request, *args, **kwargs):
+        request.user.tests.get(slug=request.GET.get('test_slug')).delete()
+        return super(UserTestDelete, self).get(request, *args, **kwargs)
+
+
+class UserTestAnswersListView(AccessMixin, ListView):
+    template_name = 'users_app/user_profile/user_test_answers.html'
+    context_object_name = 'questions'
+    login_url = reverse_lazy('login')
+
+    def get_queryset(self):
+        user = self.request.user
+        test_slug = self.kwargs.get('test_slug')
+        return user.tests.get(slug=test_slug).questions.all().prefetch_related('answers')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(UserTestAnswersListView, self).get_context_data(**kwargs)
+        user = self.request.user
+        test_slug = self.kwargs.get('test_slug')
+        context['test_title'] = user.tests.filter(slug=test_slug).values_list('title', flat=True).first()
+        return context

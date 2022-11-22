@@ -2,7 +2,7 @@ from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 from django.urls import path
 from .views import (RegistrationView, LogoutView, login_view, PasswordRecoveryView, RecoveryChangePasswordView,
-                    UserProfileView, UserResultsListView)
+                    UserProfileView, UserResultsListView, UserTestsListView, UserTestDelete, UserTestAnswersListView)
 
 
 urlpatterns = [
@@ -36,4 +36,9 @@ urlpatterns = [
 
     path('profile/', login_required(UserProfileView.as_view()), name='profile'),
     path('profile/my_results/', login_required(UserResultsListView.as_view()), name='my_results'),
+    path('profile/my_tests/', login_required(UserTestsListView.as_view()), name='my_tests'),
+    path('profile/my_tests/delete_test/', login_required(UserTestDelete.as_view()), name='test_delete'),
+    path('profile/my_tests/answers/<str:test_slug>/',
+         login_required(UserTestAnswersListView.as_view()),
+         name='test_answers'),
 ]
