@@ -33,7 +33,7 @@
                     </li>
                     {% if user.is_staff %}
                     <li class="nav-item mx-1">
-                        <a class="nav-link active" aria-current="page" href="admin/">AdminPanel</a>
+                        <a class="nav-link active" aria-current="page" href="http://127.0.0.1:8000/admin">AdminPanel</a>
                     </li>
                     {% endif %}
                     {% if user.is_moder %}
@@ -60,7 +60,7 @@
                     <ul class="dropdown-menu dropdown-menu-dark mx-0 border-0 shadow">
                         {% if user.is_authenticated %}
                         <li>
-                            <a class="dropdown-item d-flex gap-2 align-items-center" href="">
+                            <a class="dropdown-item d-flex gap-2 align-items-center" href="{% url 'profile' %}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
                                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                                 </svg>

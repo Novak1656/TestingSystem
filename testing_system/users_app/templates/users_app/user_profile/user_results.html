@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% load main_tags %}
+
+{% block title %} Мои результаты тестов {% endblock %}
+
+{% block content %}
+<div class="container text-warning border-warning">
+    <h1 class="f-3 border-bottom border-warning mb-3 mt-3">Мои результаты тестов</h1>
+    <br>
+    <div class="text-center container">
+        <div class="container text-center mb-2">
+            {% for result in results %}
+            <div class="row mb-2">
+                <button class="btn btn-outline-secondary btn-block btn-lg" data-bs-toggle="collapse" data-bs-target="#result{{ result.pk }}">
+                    {{ result.test.title }} | {{ result.score|get_estimate|safe }}
+                </button>
+                <div class="collapse" id="result{{ result.pk }}">
+                    <div class="bg-dark p-4 border-secondary border">
+                        <div class="row">
+                            <div class="col text-start">
+                                <h3 class="fs-3 text-info">Баллов получено: {{ result.score }}/100</h3>
+                                <h3 class="fs-3 text-info">Дата тестирования: {{ result.completed_at }}</h3>
+                                <a href="{% url 'test_start' result.test.pk %}" class="btn btn-outline-info">Пройти тест ещё раз</a>
+                            </div>
+                            <div class="col text-start">
+                                <h3 class="fs-3 text-success">Вопросы на которые вы ответили правильно:</h3>
+                                <ul>
+                                    {% for right_quest in result.right_answers.all %}
+                                    <li class="text-white">
+                                        {{ right_quest.question }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% if result.test.questions.all|length != result.right_answers.all|length %}
+                                <h3 class="fs-3 text-danger">Вопросы на которые вы ответили не правильно:</h3>
+                                <ul>
+                                    {% for quest in result.test.questions.all %}
+                                    {% if quest not in result.right_answers.all %}
+                                    <li class="text-white">
+                                        {{ quest.question }}
+                                    </li>
+                                    {% endif %}
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

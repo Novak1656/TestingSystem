@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ user.username }} {% endblock %}
+
+{% block content %}
+<div class="container text-white w-50">
+    <div class="row mt-3">
+        <div class="col-4 border border-info rounded">
+            <div class="border-bottom border-info mt-3 text-center">
+                <h1 class="fs-3">{{ user.get_full_name }}</h1>
+                <h1 class="fs-3">Логин: {{ user.username|title }}</h1>
+            </div>
+            <div class="container text-center mt-4 mb-3 d-flex flex-column">
+                <a href="" class="btn btn-outline-info btn-lg w-100">Настройки</a>
+                <br>
+                <a href="" class="btn btn-outline-info btn-lg w-100">Мои тесты</a>
+                <br>
+                <a href="{% url 'my_results' %}" class="btn btn-outline-info btn-lg w-100">Мои результаты</a>
+            </div>
+        </div>
+        <div class="col border border-info rounded ms-3">
+
+            <div class="container border-bottom border-info">
+                <h1 class="fs-1">Основная информация</h1>
+            </div>
+            <div class="text-white container">
+                <p class="fs-2">Фамилия: {{ user.last_name }}</p>
+                <p class="fs-2">Имя: {{ user.first_name }}</p>
+                <p class="fs-2">Email: {{ user.email }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="border border-info rounded w-100 mt-3">
+        <div class="container border-bottom border-info">
+            <h1 class="fs-1">Статистика пользователя</h1>
+        </div>
+        <div class="text-white container">
+            <p class="fs-2">Тестов создано: {{ user.tests.all.count }}</p>
+            <p class="fs-2">Тестов пройдено: {{ user.results.all.count }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

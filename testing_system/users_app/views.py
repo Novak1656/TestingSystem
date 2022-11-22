@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import AccessMixin
 from django.db.models import Q
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, FormView
+from django.views.generic import CreateView, FormView, TemplateView, ListView
 from django.views.generic import RedirectView
 from django.contrib.auth.forms import SetPasswordForm
 
@@ -113,3 +114,23 @@ class RecoveryChangePasswordView(FormView):
                 'files': self.request.FILES,
             })
         return kwargs
+
+
+class UserProfileView(AccessMixin, TemplateView):
+    template_name = 'users_app/user_profile/profile.html'
+    login_url = reverse_lazy('login')
+
+    def get_context_data(self, **kwargs):
+        context = super(UserProfileView, self).get_context_data(**kwargs)
+        context.update({'user': self.request.user})
+        return context
+
+
+class UserResultsListView(AccessMixin, ListView):
+    template_name = 'users_app/user_profile/user_results.html'
+    context_object_name = 'results'
+    login_url = reverse_lazy('login')
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.results.all().prefetch_related('right_answers', 'test__questions').select_related('test')
