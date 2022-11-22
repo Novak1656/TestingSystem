@@ -9,26 +9,15 @@
         <h1 class="display-6 text-center">{{ test_title }}</h1>
     </div>
     <div class="container w-75 mt-3">
-        {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-            {% if message.tags == 'error' %}
-            <li class="text-danger" > {{ message }} </li>
-            {% endif %}
-            {% endfor %}
-        </ul>
-        {% endif %}
-
-        <form method="post" action="">
+        <form method="post" action="{% url 'test_finish' test_pk %}">
             {% csrf_token %}
-            {{ formset.management_form }}
             {% for quest in questions %}
             <div class="row border-bottom">
                 {% if quest.image %} <img src="{{ quest.image.url }}" alt="" class="mt-2" style="width:200px"> {% endif %}
                 <h3>Вопрос {{ forloop.counter }}. {{ quest.question }}</h3>
                 {% for answer in quest.answers.all %}
                 <div class="col-6 text-center mb-3 text-info">
-                    <h3 class="fs-4">{{ forloop.counter0|digit_to_alpha }}) {{ answer.answer }} <input type="checkbox" name="{{answer.pk}}"></h3>
+                    <h3 class="fs-4">{{ forloop.counter0|digit_to_alpha }}) {{ answer.answer }} <input type="checkbox" name="{{answer.pk}}" value="{{quest.pk}}"></h3>
                 </div>
                 {% endfor %}
             </div>

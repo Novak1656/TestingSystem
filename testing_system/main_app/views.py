@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import AccessMixin
+from django.db.models import F
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
@@ -168,44 +169,44 @@ class TestDetailView(AccessMixin, DetailView):
         return Test.objects.select_related('author', 'category').prefetch_related('tags', 'questions')
 
 
-# class TestingBeginningView(AccessMixin, CreateView):
-#     model = TestResults
-#     template_name = 'main_app/start_test_page.html'
-#     login_url = reverse_lazy('login')
-#
-#     def post(self, request, *args, **kwargs):
-#         print(request.POST)
-#
-#     def get_context_data(self, **kwargs):
-#         context = super(TestingBeginningView, self).get_context_data(**kwargs)
-#         test_pk = self.kwargs['test_pk']
-#         context['test_title'] = Test.objects.filter(pk=test_pk).values_list('title', flat=True).first()
-#         context['questions'] = TestQuestions.objects.filter(test__pk=test_pk).prefetch_related('answers')
-#         return context
+class TestingBeginningView(AccessMixin, TemplateView):
+    template_name = 'main_app/start_test_page.html'
+    login_url = reverse_lazy('login')
+
+    def get_context_data(self, **kwargs):
+        context = super(TestingBeginningView, self).get_context_data(**kwargs)
+        test = Test.objects.filter(pk=kwargs.get('test_pk')).values('pk', 'title').first()
+        questions = TestQuestions.objects.filter(test__pk=kwargs.get('test_pk')).prefetch_related('answers')
+        context.update({'test_pk': test.get('pk'), 'test_title': test.get('title'), 'questions': questions})
+        return context
+
 
 @login_required
-def testing_beginning_view(request, test_pk):
+def testing_finishing_view(request, test_pk):
     test = Test.objects.get(pk=test_pk)
     questions = TestQuestions.objects.filter(test__pk=test_pk).prefetch_related('answers')
+    context = {'test_title': test.title, 'questions': questions}
     if request.method == 'POST':
-        questions_resp = dict()
-        for quest_resp in request.POST.items():
-            if 'csrfmiddlewaretoken' not in quest_resp:
-                answer_id, answer = quest_resp
-                questions_resp.update({int(answer_id): answer})
-        print(questions_resp)
-        rights = []
+        questions_resp = {
+            int(quest_pk): [] for answer_pk, quest_pk in request.POST.items() if answer_pk != 'csrfmiddlewaretoken'
+        }
+        user_answers = list()
+        for answer_pk, quest_pk in request.POST.items():
+            if answer_pk != 'csrfmiddlewaretoken':
+                questions_resp[int(quest_pk)].append(int(answer_pk))
+                user_answers.append(int(answer_pk))
+
+        rights_answers = []
         for quest in questions:
-            right_quest = True
-            for right_answer_pk in quest.answers.filter(is_right=True).values_list('id', flat=True):
-                if right_answer_pk not in questions_resp.keys():
-                    # Если хоть один ответ не верный то break
-                    # Проверку ответтов внести в отедльную функцию
-                    right_quest = False
-                    break
-            if right_quest:
-                rights.append(quest)
-        print(rights)
-    return render(request, 'main_app/start_test_page.html', {'test_title': test.title, 'questions': questions})
-# Удалить возможность создавать развёрнуттые ответы
-#class TestingBeginningView
+            if questions_resp.get(quest.pk) == list(quest.answers.filter(is_right=True).values_list('id', flat=True)):
+                rights_answers.append(quest)
+
+        score = (len(rights_answers) / questions.count()) * 100
+        results = TestResults.objects.create(test=test, user=request.user, score=score)
+        results.right_answers.add(*rights_answers)
+        results.save()
+
+        test.passed_times = F('passed_times') + 1
+        test.save()
+        context.update({'rights_answers': rights_answers, 'results': results, 'user_answers': user_answers})
+    return render(request, 'main_app/finish_test_page.html', context)

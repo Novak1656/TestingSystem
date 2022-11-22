@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.urls import path
-from .views import TestCreateView, QuestionsCreateView, AnswersCreateView, TestsListView, TestDetailView, testing_beginning_view
+from .views import (TestCreateView, QuestionsCreateView, AnswersCreateView, TestsListView, TestDetailView,
+                    testing_finishing_view, TestingBeginningView)
 
 urlpatterns = [
     path('', TestsListView.as_view(), name='main'),
@@ -10,5 +11,6 @@ urlpatterns = [
 
     path('tests/<str:slug>/', login_required(TestDetailView.as_view()), name='test_detail'),
 
-    path('tests/<int:test_pk>/start', testing_beginning_view, name='test_start')
+    path('tests/start/<int:test_pk>/', login_required(TestingBeginningView.as_view()), name='test_start'),
+    path('tests/finish/<int:test_pk>/', testing_finishing_view, name='test_finish'),
 ]
