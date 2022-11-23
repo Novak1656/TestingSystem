@@ -1,11 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import AccessMixin
-from django.db.models import F
+from django.db.models import F, Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, FormView, ListView, DetailView, TemplateView
+from django.views.generic import CreateView, FormView, ListView, DetailView, TemplateView, RedirectView
 from .models import Test, TestQuestions, TestAnswers, TestResults
 from .forms import TestForm, TestQuestionsForm, TestAnswersForm
 from .utils import CustomModalFormSetMixin
@@ -156,7 +156,9 @@ class TestsListView(ListView):
     context_object_name = 'tests'
 
     def get_queryset(self):
-        return Test.objects.filter(is_published=True).select_related('author', 'category').prefetch_related('tags', 'questions')
+        return Test.objects.filter(
+            Q(is_published=True) & Q(is_created=True)
+        ).select_related('author', 'category').prefetch_related('tags', 'questions')
 
 
 class TestDetailView(AccessMixin, DetailView):
@@ -210,3 +212,20 @@ def testing_finishing_view(request, test_pk):
         test.save()
         context.update({'rights_answers': rights_answers, 'results': results, 'user_answers': user_answers})
     return render(request, 'main_app/finish_test_page.html', context)
+
+
+class ContinueTestCreateRedirectView(AccessMixin, RedirectView):
+    login_url = reverse_lazy('login')
+
+    def get_redirect_url(self, *args, **kwargs):
+        if 'quest_count' in self.request.GET:
+            return reverse('quest_create')
+        return reverse('answer_create')
+
+    def get(self, request, *args, **kwargs):
+        if 'quest_count' in self.request.GET:
+            quest_count, test_slug = request.GET.get('quest_count'), kwargs.get('test_slug')
+            request.session.update({'quest_count': quest_count, 'test_slug': test_slug})
+            return super(ContinueTestCreateRedirectView, self).get(request, *args, **kwargs)
+        request.session.update({'quest_pk': request.GET.getlist('quest_pk')})
+        return super(ContinueTestCreateRedirectView, self).get(request, *args, **kwargs)

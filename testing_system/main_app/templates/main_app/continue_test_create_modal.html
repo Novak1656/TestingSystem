@@ -1,0 +1,23 @@
+<!-- Test Create Continue -->
+<div class="modal modal-alert" tabindex="-1" role="dialog" id="continue_create{{ test_slug }}">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content rounded-4 shadow bg-info text-dark">
+            <div class="modal-title text-center">
+                <h3>Продолжение создания теста | {{ test_title }}</h3>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <h5 class="mb-3">{{ modal_message }}</h5>
+                {% if continue_type == 'question' %}
+                <form action="{% url 'continue_create' test_slug %}" method="get">
+                    {% csrf_token %}
+                    <input type="number" class="form-control" min="1" placeholder="Введите кол-во вопросов..." name="quest_count" required>
+                    <input type="submit" class="btn btn-lg btn-outline-warning mt-3" value="Продолжить">
+                </form>
+                {% else %}
+                <a type="button" class="btn btn-lg btn-outline-warning" href="{% url 'continue_create' test_slug %}?quest_pk={{ quest_pk }}">Продолжить</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Test Create Continue -->

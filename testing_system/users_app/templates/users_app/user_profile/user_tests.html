@@ -70,7 +70,12 @@
                                     </li>
                                     {% endfor %}
                                 </ul>
+                                {% if test.is_created %}
                                 <a href="{% url 'test_answers' test.slug %}" class="btn btn-outline-info">Подробнее</a>
+                                {% else %}
+                                <a href="" class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#continue_create{{ test.slug }}">Продолжить создание теста</a>
+                                {% continue_test_create_modal test_slug=test.slug test_title=test.title test_questions=test.questions.all %}
+                                {% endif %}
                             </div>
                         </div>
                     </div>
