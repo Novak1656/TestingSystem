@@ -7,6 +7,12 @@
     <div class="border-bottom border-info">
         <h1 class="display-6 mb-3">Тесты | <span class="badge bg-danger">Всего: {{ tests|length }}</span></h1>
     </div>
+    <form action="" method="GET">
+        <div class="form-group">
+            {{filter.form.as_p}}
+        </div>
+        <button type="submit">Filter</button>
+    </form>
     <br>
     <div class="container">
         <div class="row">

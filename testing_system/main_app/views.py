@@ -6,11 +6,12 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, FormView, ListView, DetailView, TemplateView, RedirectView
+from django_filters.views import FilterView
+
 from .models import Test, TestQuestions, TestAnswers, TestResults
 from .forms import TestForm, TestQuestionsForm, TestAnswersForm
 from .utils import CustomModalFormSetMixin
-
-# Добавить возможность для пользователей закончить создание теста если такие имеются
+from .filters import TestsFilter
 
 
 class TestCreateView(AccessMixin, CreateView):
@@ -150,10 +151,11 @@ class AnswersCreateView(AccessMixin, FormView, CustomModalFormSetMixin):
         return self.render_to_response(self.get_context_data(formset_list=formset_list))
 
 
-class TestsListView(ListView):
+class TestsListView(FilterView):
     model = Test
     template_name = 'main_app/test_list.html'
     context_object_name = 'tests'
+    filterset_class = TestsFilter
 
     def get_queryset(self):
         return Test.objects.filter(

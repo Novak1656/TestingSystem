@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'debug_toolbar',
+    'django_filters',
     'users_app.apps.UsersAppConfig',
     'moder_app.apps.ModerAppConfig',
     'main_app.apps.MainAppConfig',
