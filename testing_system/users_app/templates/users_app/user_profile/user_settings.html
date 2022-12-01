@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %} Настройки акканута {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="text-center p-3">
+        <h1 class="display-4 text-white">Настройки аккаунта</h1>
+    </div>
+    {% if change_message %}
+    <div class="container text-center text-white w-50">
+        {{ change_message|safe }}
+    </div>
+    {% endif %}
+    <br>
+    <div class="bg-dark rounded">
+        <button class="container btn navbar bg-primary navbar-toggler text-white p-3" data-bs-toggle="collapse" data-bs-target="#navbar1">
+            <div>
+                <h2 class="border-start">&nbspДанные пользователя</h2>
+            </div>
+            <div class="text-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zm0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708z"/>
+                </svg>
+            </div>
+        </button>
+        <div class="collapse text-white bg-primary" id="navbar1">
+            <form method="post" action="{% url 'change_user_names' %}">
+                {% csrf_token %}
+                <div class="form-group p-3">
+                    {{ names_form.as_p }}
+                </div>
+                <div class="form-group p-1 text-center">
+                    <input type="submit" class="btn btn-success w-50" name="info_success" value="Сохранить изменения">
+                </div>
+            </form>
+        </div>
+
+        <br>
+
+        <button class="container btn navbar bg-primary bg-opacity-75 navbar-toggler text-white p-3" data-bs-toggle="collapse" data-bs-target="#navbar2">
+            <div>
+                <h2 class="border-start">&nbspЛогин</h2>
+            </div>
+            <div class="text-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zm0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708z"/>
+                </svg>
+            </div>
+        </button>
+        <div class="collapse text-white bg-primary bg-opacity-75" id="navbar2">
+            <form method="post" action="{% url 'change_user_username' %}">
+                {% csrf_token %}
+                <div class="form-group p-3">
+                    {{ username_form.as_p }}
+                </div>
+                <div class="form-group p-1 text-center">
+                    <input type="submit" class="btn btn-success w-50" name="login_success" value="Сохранить изменения">
+                </div>
+            </form>
+        </div>
+
+        <br>
+
+        <button class="container btn navbar bg-primary bg-opacity-50 navbar-toggler text-white p-3" data-bs-toggle="collapse" data-bs-target="#navbar3">
+            <div>
+                <h2 class="border-start">&nbspАдрес электронной почты</h2>
+            </div>
+            <div class="text-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zm0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708z"/>
+                </svg>
+            </div>
+        </button>
+        <div class="collapse text-white bg-primary bg-opacity-50" id="navbar3">
+            <form method="post" action="{% url 'change_user_email' %}">
+                {% csrf_token %}
+                <div class="form-group p-3">
+                    {{ email_form.as_p }}
+                </div>
+                <div class="form-group p-1 text-center">
+                    <input type="submit" class="btn btn-success w-50" name="email_success" value="Сохранить изменения">
+                </div>
+            </form>
+        </div>
+
+        <br>
+
+        <button class="container btn navbar  bg-primary bg-opacity-25 navbar-toggler text-white p-3" data-bs-toggle="collapse" data-bs-target="#navbar4">
+            <div>
+                <h2 class="border-start">&nbspПароль</h2>
+            </div>
+            <div class="text-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zm0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708z"/>
+                </svg>
+            </div>
+        </button>
+        <div class="collapse text-white  bg-primary bg-opacity-25" id="navbar4">
+            <form method="post" action="{% url 'change_user_password' %}">
+                {% csrf_token %}
+                <div class="form-group p-3">
+                    {{ password_form.as_p }}
+                </div>
+                <div class="form-group p-1 text-center">
+                    <input type="submit" class="btn btn-success w-50" name="password_success" value="Сохранить изменения">
+                </div>
+            </form>
+        </div>
+
+        <br>
+
+        <button class="container btn navbar  bg-primary bg-opacity-25 navbar-toggler text-white p-3" data-bs-toggle="collapse" data-bs-target="#navbar5">
+            <div>
+                <h2 class="border-start">&nbspСекретное слово</h2>
+            </div>
+            <div class="text-end">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-chevron-expand" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M3.646 9.146a.5.5 0 0 1 .708 0L8 12.793l3.646-3.647a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 0-.708zm0-2.292a.5.5 0 0 0 .708 0L8 3.207l3.646 3.647a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 0 0 0 .708z"/>
+                </svg>
+            </div>
+        </button>
+        <div class="collapse text-white  bg-primary bg-opacity-25" id="navbar5">
+            <form method="post" action="{% url 'change_user_secret_word' %}">
+                {% csrf_token %}
+                <div class="form-group p-3">
+                    {{ secret_word_form.as_p }}
+                </div>
+                <div class="form-group p-1 text-center">
+                    <input type="submit" class="btn btn-success w-50" name="password_success" value="Сохранить изменения">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

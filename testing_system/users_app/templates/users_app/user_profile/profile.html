@@ -11,7 +11,7 @@
                 <h1 class="fs-3">Логин: {{ user.username|title }}</h1>
             </div>
             <div class="container text-center mt-4 mb-3 d-flex flex-column">
-                <a href="" class="btn btn-outline-info btn-lg w-100">Настройки</a>
+                <a href="{% url 'user_settings' %}" class="btn btn-outline-info btn-lg w-100">Настройки</a>
                 <br>
                 <a href="{% url 'my_tests' %}" class="btn btn-outline-info btn-lg w-100">Мои тесты</a>
                 <br>

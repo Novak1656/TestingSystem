@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxLengthValidator
 
 from .models import User
 
@@ -60,3 +61,56 @@ class PasswordRecoveryForm(forms.Form):
         if not user.exists():
             raise ValidationError(f'Пользователь "{username}" не существует')
         return username
+
+
+class UserNamesForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+class UserUsernameForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']
+        widgets = {'username': forms.TextInput(attrs={'class': 'form-control'})}
+
+
+class UserEmailForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['email']
+        widgets = {'email': forms.EmailInput(attrs={'class': 'form-control'})}
+
+
+class UserPasswordForm(forms.Form):
+    password1 = forms.CharField(
+        label='Пароль',
+        help_text='Введите новый пароль',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+    password2 = forms.CharField(
+        label='Подтверждение пароля',
+        help_text='Введите пароль ещё раз',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+    )
+
+    def clean_password1(self):
+        password = self.cleaned_data['password1']
+        if len(password) < 8:
+            raise ValidationError('Длинна пароля должна составлять минимум 8 символов')
+        return password
+
+
+class UserSecretWordForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['type_secret_word', 'secret_word']
+        widgets = {
+            'type_secret_word': forms.Select(attrs={'class': 'form-control'}),
+            'secret_word': forms.TextInput(attrs={'class': 'form-control'})
+        }

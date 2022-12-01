@@ -2,7 +2,9 @@ from django.contrib.auth import views
 from django.contrib.auth.decorators import login_required
 from django.urls import path
 from .views import (RegistrationView, LogoutView, login_view, PasswordRecoveryView, RecoveryChangePasswordView,
-                    UserProfileView, UserResultsListView, UserTestsListView, UserTestDelete, UserTestAnswersListView)
+                    UserProfileView, UserResultsListView, UserTestsListView, UserTestDelete, UserTestAnswersListView,
+                    UserSettings, change_user_names, change_user_username, change_user_email, change_user_password,
+                    change_user_secret_word)
 
 
 urlpatterns = [
@@ -41,4 +43,11 @@ urlpatterns = [
     path('profile/my_tests/answers/<str:test_slug>/',
          login_required(UserTestAnswersListView.as_view()),
          name='test_answers'),
+
+    path('profile/settings/', login_required(UserSettings.as_view()), name='user_settings'),
+    path('profile/settings/change_names/', change_user_names, name='change_user_names'),
+    path('profile/settings/change_username/', change_user_username, name='change_user_username'),
+    path('profile/settings/change_email/', change_user_email, name='change_user_email'),
+    path('profile/settings/change_password/', change_user_password, name='change_user_password'),
+    path('profile/settings/change_user_secret_word/', change_user_secret_word, name='change_user_secret_word'),
 ]
