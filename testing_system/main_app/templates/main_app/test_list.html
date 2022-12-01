@@ -5,14 +5,21 @@
 {% block content %}
 <div class="container text-white border-info">
     <div class="border-bottom border-info">
-        <h1 class="display-6 mb-3">Тесты | <span class="badge bg-danger">Всего: {{ tests|length }}</span></h1>
+        <h1 class="display-6 mb-3">Тесты |
+            <span class="badge bg-danger">Всего: {{ tests|length }}</span> |
+            <button class="btn btn-outline-warning btn-block btn-lg" data-bs-toggle="collapse" data-bs-target="#page_filter">
+                Фильтры
+            </button>
+            <div class="collapse mt-2" id="page_filter">
+                <form action="" method="GET">
+                    <div class="form-group fs-5 w-100">
+                        {{ filter.form.as_p }}
+                    </div>
+                    <button type="submit" class="btn btn-outline-success btn-block btn-lg">Применить фильтр</button>
+                </form>
+            </div>
+        </h1>
     </div>
-    <form action="" method="GET">
-        <div class="form-group">
-            {{filter.form.as_p}}
-        </div>
-        <button type="submit">Filter</button>
-    </form>
     <br>
     <div class="container">
         <div class="row">
