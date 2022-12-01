@@ -254,6 +254,7 @@ def change_user_names(request):
 
 
 @login_required
+@require_http_methods(['POST'])
 def change_user_username(request):
     """
         Представление для смены username пользователя
@@ -273,6 +274,7 @@ def change_user_username(request):
 
 
 @login_required
+@require_http_methods(['POST'])
 def change_user_email(request):
     """
         Представление для смены email пользователя
@@ -292,6 +294,7 @@ def change_user_email(request):
 
 
 @login_required
+@require_http_methods(['POST'])
 def change_user_password(request):
     """
         Представление для смены пароля пользователя
@@ -317,6 +320,7 @@ def change_user_password(request):
 
 
 @login_required
+@require_http_methods(['POST'])
 def change_user_secret_word(request):
     """
         Представление для смены секретного слова пользователя

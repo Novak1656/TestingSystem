@@ -16,10 +16,11 @@ def get_estimate(score: int) -> str:
     est_form = '<span class="badge bg-%s">%s</span>'
     estimates = {
         score < 50: est_form % ('danger', 'Unsatisfactory'),
-        score < 75: est_form % ('warning', 'Satisfactory'),
-        score < 85: est_form % ('primary', 'Good'),
+        51 < score < 75: est_form % ('warning', 'Satisfactory'),
+        76 < score < 85: est_form % ('primary', 'Good'),
         score >= 85: est_form % ('success', 'Excellent')
     }
+    print(estimates)
     return estimates.get(True)
 
 
